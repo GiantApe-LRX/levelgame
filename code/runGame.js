@@ -38,6 +38,8 @@ function Level(plan) {
         this.actors.push(new Actor(new Vector(x, y), ch));
       else if (ch == "x") fieldType = "wall";
       else if (ch == "!") fieldType = "lava";
+      else if (ch == "r") fieldType = "river";
+      else if (ch == "d") fieldType = "door";
       gridLine.push(fieldType);
     }
     this.grid.push(gridLine);
@@ -92,6 +94,7 @@ var actorChars = {
  * size属性设置玩家的高和长
  * speed属性用于存储当前速度，用于模拟动量或重力 
  */
+
 function Player(pos) {
   this.pos = pos.plus(new Vector(0, -0.5));
   this.size = new Vector(0.8, 1.5);
@@ -118,6 +121,22 @@ function Lava(pos, ch) {
 }
 Lava.prototype.type = "lava";
 
+/**
+ * 构造河流对象
+ * @param {指定河流的位置}} pos 
+ */
+function River(pos) {
+  this.pos = pos;
+  this.size = new Vector(1, 1);
+  this.speed = new Vector(0, 0);
+}
+River.prototype.type = "river";
+
+function Door(pos) {
+  this.pos = pos;
+  this.size = new Vector(1, 1);
+}
+Door.prototype.type = "door";
 /**
  * 构造硬币对象
  * @param {指定硬币的基准位置} pos
@@ -295,7 +314,10 @@ Lava.prototype.act = function (step, level) {
   else if (this.repeatPos) this.pos = this.repeatPos;//若是垂直下落的熔岩，则触碰到障碍物就回到初始的位置
   else this.speed = this.speed.times(-1);//其他的熔岩则向相反的方向移动
 };
-
+River.prototype.act = function (step) {
+  var newPos = this.pos.plus(this.speed.times(step));
+  this.pos = newPos;
+}
 var wobbleSpeed = 8,
   wobbleDist = 0.07;
 
@@ -365,9 +387,9 @@ Player.prototype.act = function (step, level, keys) {
  * 设置碰撞到指定元素后的状态
  */
 Level.prototype.playerTouched = function (type, actor) {
-  if (type == "lava" && this.status == null) {//若是岩浆直接失败
+  if ((type == "lava" || type == "river") && this.status == null) {//若是岩浆直接失败
     this.status = "lost";
-    this.finishDelay = 1;
+    this.finishDelay = 3;
   } else if (type == "coin") {//若是硬币则加分
     this.actors = this.actors.filter(function (other) {
       return other != actor;
@@ -378,7 +400,7 @@ Level.prototype.playerTouched = function (type, actor) {
       })      //如果元素中没有硬币了，则玩家胜
     ) {
       this.status = "won";
-      this.finishDelay = 1;
+      this.finishDelay = 3;
     }
   }
 };
@@ -396,6 +418,7 @@ function trackKeys(codes) {
    * 注册"keydown"和"keyup"事件
    * @param {捕获事件} event 
    */
+
   function handler(event) {
     if (codes.hasOwnProperty(event.keyCode)) {
       var down = event.type == "keydown";
@@ -466,3 +489,38 @@ function runGame(plans, Display) {
   }
   startLevel(0);
 }
+function runGame(plans, Display) {
+  /**
+   * 设置游戏开始的关卡
+   * @param {关卡序号} n 
+   */
+  function startLevel(n) {
+    runLevel(new Level(plans[n]), Display, function (status) {
+      if (status == "lost") startLevel(n);
+      else if (n < plans.length - 1) startLevel(n + 1);
+      else console.log("You win!");
+    });
+  }
+  startLevel(0);
+}
+function runGame(plans, Display, n) {
+  /**
+   * 设置游戏开始的关卡
+   * @param {关卡序号} n 
+   */
+  function startLevel(n) {
+    runLevel(new Level(plans[n]), Display, function (status) {
+      if (status == "lost") startLevel(n);
+      else if (n == 0) {
+        console.log("Begin game!!!!");
+        startLevel(1);
+      } else if (n < plans.length - 1) startLevel(n + 1);
+      else {
+        console.log("You Win!!!!");
+      }
+    });
+  }
+  startLevel(n);
+}
+
+

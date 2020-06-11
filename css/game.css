@@ -10,6 +10,9 @@
 .lava{
   background: rgb(255, 100, 100); 
 }
+.river{
+  background: rgb(0, 0, 255);
+}
 .wall{
   background: white;
   
@@ -24,16 +27,19 @@
 .player { 
   background: rgb(64, 64, 64); 
 }
-
+.door{
+  background: rgb(160, 64, 64);
+}
 .game {
   overflow: hidden;
-  max-width: 600px;
-  max-height: 450px;
+  max-width:1000px;
+  max-height: 700px;
   position: relative;
+  border-radius: 10%;
 }
 
 .lost .player {
-  background: rgb(160, 64, 64);
+  background: rgb(20, 100, 144);
 }
 .won .player {
   box-shadow: -4px -7px 8px white, 4px -7px 8px white;
