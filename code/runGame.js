@@ -54,6 +54,9 @@ function Level(plan) {
   //status:记录玩家的胜负
   //finishDelay:结束关卡的延迟
   this.status = this.finishDelay = null;
+  this.unmatched = false;
+  this.unmatchedTime = 0;
+  this.life = 3;
 }
 
 /**
@@ -295,8 +298,19 @@ var maxStep = 0.05;//每次的移动不能超过0.05s
 
 
 Level.prototype.animate = function (step, keys) {
-  if (this.status != null) this.finishDelay -= step;//调整关卡结束之后，继续进入下一关或者重新开始的时间
+  if (this.status != null) {
+    this.finishDelay -= step;//调整关卡结束之后，继续进入下一关或者重新开始的时间
+    console.log("结束延迟：" + this.finishDelay)
+  }
+  if (this.unmatchedTime < 0) {
+    this.unmatched = false;
+    this.unmatchedTime = 0;
+  }
 
+  if (this.unmatched == true) {
+    this.unmatchedTime -= step;
+    console.log("时间：" + this.unmatchedTime + "," + "生命值：" + this.life);
+  }
   while (step > 0) {//为了使得动画连贯，将移动的距离进行分割，每次都要小于0.05
     var thisStep = Math.min(step, maxStep);
     this.actors.forEach(function (actor) {
@@ -388,9 +402,14 @@ Player.prototype.act = function (step, level, keys) {
  * 设置碰撞到指定元素后的状态
  */
 Level.prototype.playerTouched = function (type, actor) {
-  if ((type == "lava" || type == "river") && this.status == null) {//若是岩浆直接失败
+  if (((type == "river" && this.status == null) || this.life <= 0)) {//若是碰到河流直接死亡
     this.status = "lost";
     this.finishDelay = 3;
+    this.life = 3;
+  } else if (type == "lava" && this.status == null && this.unmatched == false) {//若是岩浆生命值-1并进入短暂的无敌模式
+    this.unmatched = true;
+    this.life--;
+    this.unmatchedTime = 1;
   } else if (type == "coin") {//若是硬币则加分
     this.actors = this.actors.filter(function (other) {
       return other != actor;
@@ -476,20 +495,6 @@ function runLevel(level, Display, andThen) {
  * @param {地图} plans 
  * @param {展现的函数} Display 
  */
-function runGame(plans, Display) {
-  /**
-   * 设置游戏开始的关卡
-   * @param {关卡序号} n 
-   */
-  function startLevel(n) {
-    runLevel(new Level(plans[n]), Display, function (status) {
-      if (status == "lost") startLevel(n);
-      else if (n < plans.length - 1) startLevel(n + 1);
-      else console.log("You win!");
-    });
-  }
-  startLevel(0);
-}
 function runGame(plans, Display) {
   /**
    * 设置游戏开始的关卡
