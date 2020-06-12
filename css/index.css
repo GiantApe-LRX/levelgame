@@ -1,33 +1,41 @@
 
 #show{
     position: relative;
-    margin-left: 15%;
     background-image: url("../img/start.jpg");
     background-repeat: no-repeat;
     height: 700px;
     width: 1000px;
 }
 #ps_game{
+    /*位置的设计 */
+    left: 40%;
+    top:10%;
+    
+}
+#box_game{
+    /*位置的设计 */
+    left: 40%;
+    top: 25%;
+}
+#show .bt{
+    /*位置以及长宽的设计 */
     width: 200px;
     height: 50px;
     display: block;
     position: relative;
-    left: 40%;
-    top:10%;
+    /*字体设计*/
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    /*外观设计*/
     border-radius: 20px;
-    border: 1px solid black;
+    border: 1px solid blue;
     background: rgba(100, 200, 250, 50%);
     box-shadow: 1px 8px  20px rgba(0, 0, 0, 0.4);
 }
-#box_game{
-    width: 200px;
-    height: 50px;
-    display: block;
-    position: relative;
-    left: 40%;
-    top: 20%;
-    border-radius: 20px;
-    border: 1px solid black;
-    background: rgba(100, 200, 250, 50%);
-    box-shadow: 1px 8px  20px rgba(0, 0, 0, 0.4);
+#show .bt:hover{
+    /* transition-timing-function: ease-out; */
+    cursor: pointer;
+    border: 1px solid red;
+    transform:scale(1.1, 1.1);
 }

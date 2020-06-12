@@ -76,12 +76,14 @@ CanvasDisplay.prototype.drawBackground = function () {
       var screenX = (x - view.left) * scale;
       var screenY = (y - view.top) * scale;
       // var tileX = tile == "lava" ? scale : 0;
-      if (tile == "wall") {
+      if (tile == "wall" || tile == "door") {
         tileX = 0;
       } else if (tile == "river") {
         tileX = scale;
       } else if (tile == "lava") {
         tileX = scale * 2;
+      } else if (tile == "destination") {
+        tileX = scale * 3;
       }
       this.cx.drawImage(otherSprites,
         tileX, 0, scale, scale,
@@ -126,7 +128,13 @@ CanvasDisplay.prototype.drawActors = function () {
     if (actor.type == "player") {
       this.drawPlayer(x, y, width, height);
     } else {
-      var tileX = (actor.type == "coin" ? 3 : 2) * scale;
+      if (actor.type == "coin") {
+        tileX = 4 * scale;
+      } else if (actor.type == "lava") {
+        tileX = 2 * scale;
+      } else {
+        tileX = 3 * scale;
+      }
       this.cx.drawImage(otherSprites,
         tileX, 0, width, height,
         x, y, width, height);

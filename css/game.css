@@ -30,6 +30,10 @@
 .door{
   background: rgb(160, 64, 64);
 }
+
+.destination{
+  background: peru;
+}
 .game {
   overflow: hidden;
   max-width:1000px;
@@ -43,4 +47,7 @@
 }
 .won .player {
   box-shadow: -4px -7px 8px white, 4px -7px 8px white;
+}
+.unmatched .player{
+  background: goldenrod;
 }

@@ -3,6 +3,8 @@
 //'=':水平方向移动的熔岩
 //'|':垂直方向移动的熔岩
 //'v':表示下落的元素
+
+
 //tip:所有元素位置对应的网格设置为空气
 var simpleLevelPlan = [
   "                      ",
@@ -51,12 +53,15 @@ function Level(plan) {
     return actor.type == "player";
   })[0];
 
+
   //status:记录玩家的胜负
   //finishDelay:结束关卡的延迟
   this.status = this.finishDelay = null;
   this.unmatched = false;
   this.unmatchedTime = 0;
-  this.life = 3;
+  this.hp = 3;
+  this.timeCount = 0;
+  this.coinCount = 0;
 }
 
 /**
@@ -87,6 +92,7 @@ Vector.prototype.times = function (factor) {
 var actorChars = {
   "@": Player,
   "o": Coin,
+  "#": Dest,
   "=": Lava,
   "|": Lava,
   "v": Lava,
@@ -125,28 +131,6 @@ function Lava(pos, ch) {
 }
 Lava.prototype.type = "lava";
 
-/**
- * 构造河流对象
- * @param {指定河流的位置}} pos 
- */
-function River(pos) {
-  this.pos = pos;
-  this.size = new Vector(1, 1);
-  this.speed = new Vector(0, 0);
-}
-River.prototype.type = "river";
-
-function Door(pos) {
-  this.pos = pos;
-  this.size = new Vector(1, 1);
-}
-Door.prototype.type = "door";
-/**
- * 构造硬币对象
- * @param {指定硬币的基准位置} pos
- * size属性表示硬币的大小
- * wobble属性表示硬币跟踪图像跳动幅度 
- */
 function Coin(pos) {
   this.basePos = this.pos = pos.plus(new Vector(0.2, 0.1));
   this.size = new Vector(0.6, 0.6);
@@ -154,6 +138,16 @@ function Coin(pos) {
 }
 Coin.prototype.type = "coin";
 
+/**
+ * 构造目标对象
+ * @param {指定目标位置} pos 
+ */
+function Dest(pos) {
+  this.pos = pos;
+  this.size = new Vector(1, 1);
+}
+
+Dest.prototype.type = "destination";
 //测试地图创建正常
 // var simpleLevel = new Level(simpleLevelPlan);
 // console.log(simpleLevel.height, simpleLevel.width);
@@ -202,6 +196,11 @@ DOMDisplay.prototype.drawBackground = function () {
   return table;
 };
 
+DOMDisplay.prototype.drawFinishScene = function (status) {
+  this.wrap.innerHTML = "";
+  console.log(this.wrap);
+}
+
 /**
  * 绘制活动元素
  */
@@ -220,7 +219,7 @@ DOMDisplay.prototype.drawActors = function () {
 DOMDisplay.prototype.drawFrame = function () {//需要被实时的调用，更新地图的显示
   if (this.actorLayer) this.wrap.removeChild(this.actorLayer);//删除所有的旧活动元素
   this.actorLayer = this.wrap.appendChild(this.drawActors());
-  this.wrap.className = "game " + (this.level.status || "");
+  this.wrap.className = "game " + (this.level.status || (this.level.unmatched ? "unmatched" : ""));
   this.scrollPlayerIntoView();
 };
 
@@ -257,6 +256,44 @@ DOMDisplay.prototype.clear = function () {
 };
 
 
+
+Level.prototype.showResult = function () {
+  console.log("所获得的金币数为" + this.coinCount);
+  console.log("所耗费的时间为" + this.getGameTime());
+  console.log("血槽为" + this.gethp());
+}
+/**
+ * 获取游戏的时间
+ */
+Level.prototype.getGameTime = function () {
+  var time = this.timeCount;
+  time = Math.floor(time);
+  var timeStr = "", minute = 0, second = 0;
+  if (time >= 60) {
+    minute = Math.floor(time / 60);
+    time %= 60;
+    timeStr += minute + "分";
+  }
+  if (time > 0) {
+    second = time % 60;
+    timeStr += second + "秒";
+  }
+  return timeStr;
+}
+Level.prototype.gethp = function () {
+  return this.hp;
+}
+/**
+ * 获取剩余无敌时间
+ */
+Level.prototype.getUnmatchedTime = function () {
+  var time = this.unmatchedTime;
+  if (time == 0) {
+    return null;
+  } else {
+    return (this.unmatchedTime).toFixed(2);
+  }
+}
 /**
  * 返回指定位置的元素类型
  */
@@ -298,9 +335,10 @@ var maxStep = 0.05;//每次的移动不能超过0.05s
 
 
 Level.prototype.animate = function (step, keys) {
+  this.timeCount += step;
   if (this.status != null) {
     this.finishDelay -= step;//调整关卡结束之后，继续进入下一关或者重新开始的时间
-    console.log("结束延迟：" + this.finishDelay)
+    // console.log("结束延迟：" + this.finishDelay)//测试
   }
   if (this.unmatchedTime < 0) {
     this.unmatched = false;
@@ -309,7 +347,11 @@ Level.prototype.animate = function (step, keys) {
 
   if (this.unmatched == true) {
     this.unmatchedTime -= step;
-    console.log("时间：" + this.unmatchedTime + "," + "生命值：" + this.life);
+    // console.log("时间：" + this.unmatchedTime + "," + "生命值：" + this.hp);//测试
+    var countUnmatchedTime = this.getUnmatchedTime();
+    if (countUnmatchedTime != null && countUnmatchedTime > 0) {
+      console.log("剩余时间" + countUnmatchedTime);
+    }
   }
   while (step > 0) {//为了使得动画连贯，将移动的距离进行分割，每次都要小于0.05
     var thisStep = Math.min(step, maxStep);
@@ -329,10 +371,6 @@ Lava.prototype.act = function (step, level) {
   else if (this.repeatPos) this.pos = this.repeatPos;//若是垂直下落的熔岩，则触碰到障碍物就回到初始的位置
   else this.speed = this.speed.times(-1);//其他的熔岩则向相反的方向移动
 };
-River.prototype.act = function (step) {
-  var newPos = this.pos.plus(this.speed.times(step));
-  this.pos = newPos;
-}
 var wobbleSpeed = 8,
   wobbleDist = 0.07;
 
@@ -344,6 +382,14 @@ Coin.prototype.act = function (step) {
   var wobblePos = Math.sin(this.wobble) * wobbleDist;//以波形算出硬币新的位置
   this.pos = this.basePos.plus(new Vector(0, wobblePos));
 };
+/**
+ * 设置目标位的晃动
+ */
+Dest.prototype.act = function (step) {
+  // this.wobble += step * wobbleSpeed;//跟踪时间以创建波长
+  // var wobblePos = Math.sin(this.wobble) * wobbleDist;//以波形算出硬币新的位置
+  // this.pos = this.basePos.plus(new Vector(0, wobblePos));
+}
 
 var playerXSpeed = 7;//设置人物横向移动的速度
 
@@ -402,26 +448,31 @@ Player.prototype.act = function (step, level, keys) {
  * 设置碰撞到指定元素后的状态
  */
 Level.prototype.playerTouched = function (type, actor) {
-  if (((type == "river" && this.status == null) || this.life <= 0)) {//若是碰到河流直接死亡
+  if (((type == "river" && this.status == null) || this.hp <= 0)) {//若是碰到河流直接死亡
+    this.hp = 0;
+    this.showResult();
     this.status = "lost";
-    this.finishDelay = 3;
-    this.life = 3;
+    this.finishDelay = 5;
+    this.hp = 3;
   } else if (type == "lava" && this.status == null && this.unmatched == false) {//若是岩浆生命值-1并进入短暂的无敌模式
     this.unmatched = true;
-    this.life--;
+    this.hp--;
     this.unmatchedTime = 1;
   } else if (type == "coin") {//若是硬币则加分
+    //吃掉硬币
     this.actors = this.actors.filter(function (other) {
       return other != actor;
     });
-    if (
-      !this.actors.some(function (actor) {
-        return actor.type == "coin";
-      })      //如果元素中没有硬币了，则玩家胜
-    ) {
-      this.status = "won";
-      this.finishDelay = 3;
-    }
+    this.coinCount++;
+
+  } else if (type == "destination") {
+    //拾取披风
+    this.actors = this.actors.filter(function (other) {
+      return other != actor;
+    });
+    this.showResult();
+    this.status = "won";
+    this.finishDelay = 5;
   }
 };
 
@@ -484,6 +535,7 @@ function runLevel(level, Display, andThen) {
     display.drawFrame(step);//更新地图里的信息
     if (level.isFinished()) {//若游戏结束，清除平台的所有元素
       display.clear();
+      // display.drawFinishScene();
       if (andThen) andThen(level.status);//通过andThen来判断是进入下一关还是重新开始
       return false;
     }
@@ -516,8 +568,9 @@ function runGame(plans, Display, n) {
    */
   function startLevel(n) {
     runLevel(new Level(plans[n]), Display, function (status) {
-      if (status == "lost") startLevel(n);
-      else if (n == 0) {
+      if (status == "lost") {
+        startLevel(n);
+      } else if (n == 0) {
         console.log("Begin game!!!!");
         startLevel(1);
       } else if (n < plans.length - 1) startLevel(n + 1);
@@ -528,5 +581,6 @@ function runGame(plans, Display, n) {
   }
   startLevel(n);
 }
+
 
 
