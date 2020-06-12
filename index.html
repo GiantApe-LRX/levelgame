@@ -7,14 +7,28 @@
     <title>LevelGame</title>
     <script src="code/runGame.js"></script>
     <script src="code/map.js"></script>
+    <script src="code/canvas.js"></script>
     <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/index.css">
+
 </head>
 
-<body>
+<body align="center">
     <script>
-        runGame(GAME_LEVELS, DOMDisplay, 0);
+        function removeAllNode() {
+            var arr = document.body.childNodes;
+            var len = arr.length;
+            while (len--) {
+                document.body.removeChild(arr[0]);
+            }
+        }
     </script>
-
+    <div id="show">
+        <input type="button" value="人物模式" id="ps_game"
+            onclick="removeAllNode();runGame(GAME_LEVELS, CanvasDisplay, 0);" />
+        <input type="button" value="方块模式" id="box_game"
+            onclick="removeAllNode();runGame(GAME_LEVELS, DOMDisplay, 0);" />
+    </div>
 </body>
 
 </html>

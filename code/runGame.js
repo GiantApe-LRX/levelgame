@@ -21,6 +21,7 @@ var simpleLevelPlan = [
  * @param {地图} plan
  */
 function Level(plan) {
+
   this.width = plan[0].length;
   this.height = plan.length;
   this.grid = []; //存储非活动的元素，活动元素设为null
