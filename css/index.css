@@ -12,10 +12,21 @@
     top:10%;
     
 }
+#ps_unmatched_game{
+    /*位置的设计 */
+    left: 40%;
+    top: 12%;
+}
 #box_game{
     /*位置的设计 */
     left: 40%;
-    top: 25%;
+    top: 15%;
+}
+
+#box_unmatched_game{
+    /*位置的设计 */
+    left: 40%;
+    top: 17%;
 }
 #show .bt{
     /*位置以及长宽的设计 */
@@ -38,4 +49,9 @@
     cursor: pointer;
     border: 1px solid red;
     transform:scale(1.1, 1.1);
+}
+
+.imgbox{
+    display: block;
+    float: left;
 }

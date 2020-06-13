@@ -5,9 +5,13 @@ function flipHorizontally(context, around) {
 }
 function CanvasDisplay(parent, level) {
   this.canvas = document.createElement("canvas");
+  this.canvas.className = "imgbox";
+  // this.canvas.style.display = block;
+  // console.log(this.canvas.style);
   this.canvas.width = Math.min(1000, level.width * scale);
   this.canvas.height = Math.min(700, level.height * scale);
   parent.appendChild(this.canvas);
+  this.statusBar = new StatusBar(parent, level);
   this.cx = this.canvas.getContext("2d");
 
   this.level = level;
@@ -25,6 +29,7 @@ function CanvasDisplay(parent, level) {
 
 CanvasDisplay.prototype.clear = function () {
   this.canvas.parentNode.removeChild(this.canvas);
+  this.statusBar.wrap.remove();
 };
 
 CanvasDisplay.prototype.drawFrame = function (step) {

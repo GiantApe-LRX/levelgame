@@ -57,10 +57,14 @@ function Level(plan) {
   //status:记录玩家的胜负
   //finishDelay:结束关卡的延迟
   this.status = this.finishDelay = null;
+  //设置无敌模式，以及无敌状态持续的时间
   this.unmatched = false;
   this.unmatchedTime = 0;
+  //初始化血槽大小
   this.hp = 3;
+  //记录游戏时间
   this.timeCount = 0;
+  //记录金币数
   this.coinCount = 0;
 }
 
@@ -126,6 +130,7 @@ function Lava(pos, ch) {
     this.speed = new Vector(0, 2);
   } else if (ch == "v") {
     this.speed = new Vector(0, 3);
+    //记录初始化的位置
     this.repeatPos = pos;
   }
 }
@@ -152,7 +157,6 @@ Dest.prototype.type = "destination";
 // var simpleLevel = new Level(simpleLevelPlan);
 // console.log(simpleLevel.height, simpleLevel.width);
 // console.log(simpleLevel);
-
 /**
  * 创建DOM元素对象
  * @param {指定的DOM元素名} name 
@@ -165,98 +169,8 @@ function elt(name, className) {
 }
 
 /**
- * 构造监视器对象
- * @param {指定父类对象的监视器} parent 
- * @param {传入指定的地图} level 
+ * 在控制台显示金币数，耗费的时间以及血槽量
  */
-function DOMDisplay(parent, level) {
-  this.wrap = parent.appendChild(elt("div", "game"));//游戏的包装器
-  this.level = level;
-
-  this.wrap.appendChild(this.drawBackground());
-  this.actorLayer = null;//保存活动元素的动作
-  this.drawFrame();//绘制活动元素
-}
-
-var scale = 20;//实际方格的高
-
-/**
- * 绘制关卡背景
- */
-DOMDisplay.prototype.drawBackground = function () {
-  var table = elt("table", "background");
-  table.style.width = this.level.width * scale + "px";
-  this.level.grid.forEach(function (row) {
-    var rowElt = table.appendChild(elt("tr"));
-    rowElt.style.height = scale + "px";
-    row.forEach(function (type) {
-      rowElt.appendChild(elt("td", type));
-    });
-  });
-  return table;
-};
-
-DOMDisplay.prototype.drawFinishScene = function (status) {
-  this.wrap.innerHTML = "";
-  console.log(this.wrap);
-}
-
-/**
- * 绘制活动元素
- */
-DOMDisplay.prototype.drawActors = function () {
-  var wrap = elt("div");//用于包装活动元素的包装器
-  this.level.actors.forEach(function (actor) {//设置每一个活动元素的长高以及位置
-    var rect = wrap.appendChild(elt("div", "actor " + actor.type));
-    rect.style.width = actor.size.x * scale + "px";
-    rect.style.height = actor.size.y * scale + "px";
-    rect.style.left = actor.pos.x * scale + "px";
-    rect.style.top = actor.pos.y * scale + "px";
-  });
-  return wrap;
-};
-
-DOMDisplay.prototype.drawFrame = function () {//需要被实时的调用，更新地图的显示
-  if (this.actorLayer) this.wrap.removeChild(this.actorLayer);//删除所有的旧活动元素
-  this.actorLayer = this.wrap.appendChild(this.drawActors());
-  this.wrap.className = "game " + (this.level.status || (this.level.unmatched ? "unmatched" : ""));
-  this.scrollPlayerIntoView();
-};
-
-/**
- * 调整窗口的视图
- */
-DOMDisplay.prototype.scrollPlayerIntoView = function () {
-  var width = this.wrap.clientWidth;//获取wrap的可视宽度
-  var height = this.wrap.clientHeight;//获取wrap的可视高度
-  var margin = width / 3;
-
-  // The viewport
-  var left = this.wrap.scrollLeft,//设置或获取位于wrap左边界和窗口中目前可见内容的最左端之间的距离
-    right = left + width;
-  var top = this.wrap.scrollTop,//获取wrap对象的滚动高度
-    bottom = top + height;
-
-  var player = this.level.player;
-  var center = player.pos.plus(player.size.times(0.5)).times(scale);//获取人物的中心坐标
-
-  if (center.x < left + margin) this.wrap.scrollLeft = center.x - margin;//视图左移
-  else if (center.x > right - margin)
-    this.wrap.scrollLeft = center.x + margin - width;                   //视图右移
-  if (center.y < top + margin) this.wrap.scrollTop = center.y - margin; //视图上移
-  else if (center.y > bottom - margin)
-    this.wrap.scrollTop = center.y + margin - height;                   //视图下移
-};
-
-/**
- * 清除关卡中所有的元素，在重新关卡或进入下一个关卡时调用此方法
- */
-DOMDisplay.prototype.clear = function () {
-  this.wrap.parentNode.removeChild(this.wrap);
-};
-
-
-
 Level.prototype.showResult = function () {
   console.log("所获得的金币数为" + this.coinCount);
   console.log("所耗费的时间为" + this.getGameTime());
@@ -294,6 +208,8 @@ Level.prototype.getUnmatchedTime = function () {
     return (this.unmatchedTime).toFixed(2);
   }
 }
+
+
 /**
  * 返回指定位置的元素类型
  */
@@ -312,8 +228,6 @@ Level.prototype.obstacleAt = function (pos, size) {
     }
   }
 };
-
-
 /**
  * 找到与actor有碰撞的物体并返回
  */
@@ -330,15 +244,18 @@ Level.prototype.actorAt = function (actor) {
       return other;
   }
 };
-
 var maxStep = 0.05;//每次的移动不能超过0.05s
-
-
+/**
+ * 每次隔一小段时间执行的方法
+ * @param {时间间隔} step 
+ * @param {按键} keys 
+ */
 Level.prototype.animate = function (step, keys) {
-  this.timeCount += step;
   if (this.status != null) {
     this.finishDelay -= step;//调整关卡结束之后，继续进入下一关或者重新开始的时间
     // console.log("结束延迟：" + this.finishDelay)//测试
+  } else {
+    this.timeCount += step;
   }
   if (this.unmatchedTime < 0) {
     this.unmatched = false;
@@ -477,7 +394,7 @@ Level.prototype.playerTouched = function (type, actor) {
 };
 
 /**定义各个按键码的名字 */
-var arrowCodes = { 37: "left", 38: "up", 39: "right" };
+var arrowCodes = { 37: "left", 38: "up", 39: "right", 87: "up", 65: "left", 68: "right" };
 
 /**
  * 跟踪按键
@@ -528,14 +445,28 @@ function runAnimation(frameFunc) {
  */
 var arrows = trackKeys(arrowCodes);
 
-function runLevel(level, Display, andThen) {
+function runLevel(level, passID, unmatched, Display, andThen) {
   var display = new Display(document.body, level);
+  if (unmatched) {
+    level.unmatched = true;
+    level.unmatchedTime = 0x3f3f3f3f3f3f3f;//设置无敌时间为inf
+  }
+  if (passID == 0) {
+    display.statusBar.drawDesc();
+  }
   runAnimation(function (step) {
     level.animate(step, arrows);//让平台里面的所有活动元素动起来(step是执行的步长，arrows是按键集合)
     display.drawFrame(step);//更新地图里的信息
+    //更新状态栏中的信息
+    if (level.status == "won" && passID == 0) {
+      display.statusBar.drawBeginGameScene();
+    } else if (passID != 0) {
+      display.statusBar.showStatus(passID);
+    } else {
+      display.statusBar.drawDesc();
+    }
     if (level.isFinished()) {//若游戏结束，清除平台的所有元素
       display.clear();
-      // display.drawFinishScene();
       if (andThen) andThen(level.status);//通过andThen来判断是进入下一关还是重新开始
       return false;
     }
@@ -546,28 +477,11 @@ function runLevel(level, Display, andThen) {
  * 运行游戏
  * @param {地图} plans 
  * @param {展现的函数} Display 
+ * @param {关卡} n
  */
-function runGame(plans, Display) {
-  /**
-   * 设置游戏开始的关卡
-   * @param {关卡序号} n 
-   */
+function runGame(plans, Display, n, unmatched) {
   function startLevel(n) {
-    runLevel(new Level(plans[n]), Display, function (status) {
-      if (status == "lost") startLevel(n);
-      else if (n < plans.length - 1) startLevel(n + 1);
-      else console.log("You win!");
-    });
-  }
-  startLevel(0);
-}
-function runGame(plans, Display, n) {
-  /**
-   * 设置游戏开始的关卡
-   * @param {关卡序号} n 
-   */
-  function startLevel(n) {
-    runLevel(new Level(plans[n]), Display, function (status) {
+    runLevel(new Level(plans[n]), n, unmatched, Display, function (status) {
       if (status == "lost") {
         startLevel(n);
       } else if (n == 0) {
