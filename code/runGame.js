@@ -131,7 +131,6 @@ function Level(plan) {
       else if (ch == "!") fieldType = "lava";
       else if (ch == "r") fieldType = "river";
       else if (ch == "d") fieldType = "door";
-      else if (ch == "#") fieldType = "destination";
       gridLine.push(fieldType);
     }
     this.grid.push(gridLine);
@@ -193,7 +192,8 @@ var actorChars = {
   "=": Lava,
   "|": Lava,
   "v": Lava,
-  "b": Bullet
+  "b": Bullet,
+  "#": Dest
 };
 
 /**
@@ -239,6 +239,17 @@ function Coin(pos) {
 }
 Coin.prototype.type = "coin";
 
+function Dest(pos) {
+  this.pos = pos;
+  this.size = new Vector(1, 1);
+}
+
+Dest.prototype.type = "destination";
+/**
+ * 构造子弹对象
+ * @param {子弹的地址} pos 
+ * @param {子弹的方向} dir 
+ */
 function Bullet(pos, dir) {
   this.pos = pos;
   this.size = new Vector(0.6, 0.6);
@@ -392,7 +403,6 @@ Level.prototype.animate = function (step, keys) {
   }
 };
 
-// 设置岩浆的移动属性，因为它不需要键盘输入，所以不需要keys参数
 Lava.prototype.act = function (step, level) {
   var newPos = this.pos.plus(this.speed.times(step));
   if (!level.obstacleAt(newPos, this.size)) this.pos = newPos;
@@ -402,12 +412,16 @@ Lava.prototype.act = function (step, level) {
 var wobbleSpeed = 8,
   wobbleDist = 0.07;
 
-// 设置硬币的晃动
 Coin.prototype.act = function (step) {
   this.wobble += step * wobbleSpeed;//跟踪时间以创建波长
   var wobblePos = Math.sin(this.wobble) * wobbleDist;//以波形算出硬币新的位置
   this.pos = this.basePos.plus(new Vector(0, wobblePos));
 };
+
+Dest.prototype.act = function (step) {
+  return;
+}
+
 Bullet.prototype.act = function (step, level) {
   var newPos = this.pos.plus(this.speed.times(step));
   var obstacle = level.obstacleAt(newPos, this.size)
@@ -533,7 +547,7 @@ Level.prototype.playerTouched = function (type, actor) {
 //===========================跟踪按键========================================
 
 /**定义各个按键码的名字 */
-var arrowCodes = { 37: "left", 38: "up", 39: "right", 83: "shoot", 87: "up", 65: "left", 68: "right" };
+var arrowCodes = { 37: "left", 38: "up", 39: "right", 83: "shoot", 75: "up", 65: "left", 68: "right", 74: "shoot" };
 
 /**
  * 跟踪按键
