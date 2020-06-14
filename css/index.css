@@ -3,7 +3,7 @@
     position: relative;
     background-image: url("../img/start.jpg");
     background-repeat: no-repeat;
-    height: 700px;
+    height: 400px;
     width: 1000px;
 }
 #ps_game{
@@ -54,4 +54,19 @@
 .imgbox{
     display: block;
     float: left;
+}
+
+.c_bt{
+    height: 50px;
+    width: 100px;
+    border-radius: 20px;
+    border: 1px solid blue;
+    background-color: rgba(100, 200, 250, 50%);
+    box-shadow: 1px 8px  20px rgba(0, 0, 0, 0.4);
+}
+.c_bt:hover{
+    /* transition-timing-function: ease-out; */
+    cursor: pointer;
+    border: 1px solid red;
+    transform:scale(1.1, 1.1);
 }

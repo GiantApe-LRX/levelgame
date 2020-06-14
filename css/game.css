@@ -17,6 +17,9 @@
   background: white;
   
 }
+.door{
+  background: rgb(160, 64, 64);
+}
 
 .actor  {
   position: absolute;
@@ -27,8 +30,8 @@
 .player { 
   background: rgb(64, 64, 64); 
 }
-.door{
-  background: rgb(160, 64, 64);
+.bullet{
+  background-color: violet;
 }
 
 .destination{

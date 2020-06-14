@@ -3,6 +3,7 @@ function flipHorizontally(context, around) {
   context.scale(-1, 1);
   context.translate(-around, 0);
 }
+var scale = 20;
 function CanvasDisplay(parent, level) {
   this.canvas = document.createElement("canvas");
   this.canvas.className = "imgbox";

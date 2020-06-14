@@ -1,4 +1,13 @@
-
+/**
+ * 创建DOM元素对象
+ * @param {指定的DOM元素名} name 
+ * @param {指定的DOM元素的className} className 
+ */
+function elt(name, className) {
+    var elt = document.createElement(name);
+    if (className) elt.className = className;
+    return elt;
+}
 /**
  * 构造监视器对象
  * @param {指定父类对象的监视器} parent 
@@ -30,11 +39,6 @@ DOMDisplay.prototype.drawBackground = function () {
     });
     return table;
 };
-
-DOMDisplay.prototype.drawFinishScene = function (status) {
-    this.wrap.innerHTML = "";
-    console.log(this.wrap);
-}
 
 /**
  * 绘制活动元素

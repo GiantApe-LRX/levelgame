@@ -15,7 +15,6 @@ StatusBar.prototype.drawDesc = function () {
 
     var tableDiv = this.wrap.appendChild(elt("div", "tableDiv"));
     var table = elt("table", "descTable");
-    console.log(this.wrap);
     //操作说明：
     var trAltDesc = table.appendChild(elt("tr"));
     var tdAltDescLabel = trAltDesc.appendChild(elt("td", "label"));
