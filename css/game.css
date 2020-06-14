@@ -33,6 +33,9 @@
 .bullet{
   background-color: violet;
 }
+.enemy{
+  background-color: black;
+}
 
 .destination{
   background: peru;

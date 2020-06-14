@@ -83,9 +83,16 @@
  *      type:设置当前元素的类型
  *    Bullet的方法
  *      act:描述子弹的移动
+ * 设置敌人对象Enemy
+ *     Enemy的属性
+ *       pos:表示敌人的位置
+ *       size:表示敌人的长和高
+ *       speed:表示敌人移动的方向以及速度
+ *       type:设置当前敌人的类型
+ *     Enemy的方法
+ *      act：描述敌人的移动
  * 
- * 
- */
+ **************************************************************************/
 
 
 
@@ -189,7 +196,7 @@ Vector.prototype.times = function (factor) {
 var actorChars = {
   "@": Player,
   "o": Coin,
-  "=": Lava,
+  "=": Enemy,
   "|": Lava,
   "v": Lava,
   "b": Bullet,
@@ -217,9 +224,7 @@ Player.prototype.type = "player";
 function Lava(pos, ch) {
   this.pos = pos;
   this.size = new Vector(1, 1);
-  if (ch == "=") {
-    this.speed = new Vector(2, 0);
-  } else if (ch == "|") {
+  if (ch == "|") {
     this.speed = new Vector(0, 2);
   } else if (ch == "v") {
     this.speed = new Vector(0, 3);
@@ -227,6 +232,13 @@ function Lava(pos, ch) {
   }
 }
 Lava.prototype.type = "lava";
+
+function Enemy(pos) {
+  this.pos = pos;
+  this.size = new Vector(1, 1);
+  this.speed = new Vector(2, 0);
+}
+Enemy.prototype.type = "enemy";
 
 /**
  * 构造硬币对象
@@ -403,11 +415,19 @@ Level.prototype.animate = function (step, keys) {
   }
 };
 
+Enemy.prototype.act = function (step, level) {
+  var newPos = this.pos.plus(this.speed.times(step));
+  if (!level.obstacleAt(newPos, this.size)) {
+    this.pos = newPos;
+  } else {
+    this.speed = this.speed.times(-1);
+  }
+}
 Lava.prototype.act = function (step, level) {
   var newPos = this.pos.plus(this.speed.times(step));
   if (!level.obstacleAt(newPos, this.size)) this.pos = newPos;
   else if (this.repeatPos) this.pos = this.repeatPos;//若是垂直下落的熔岩，则触碰到障碍物就回到初始的位置
-  else this.speed = this.speed.times(-1);//其他的熔岩则向相反的方向移动
+  else this.speed = this.speed.times(-1);
 };
 var wobbleSpeed = 8,
   wobbleDist = 0.07;
@@ -424,11 +444,16 @@ Dest.prototype.act = function (step) {
 
 Bullet.prototype.act = function (step, level) {
   var newPos = this.pos.plus(this.speed.times(step));
-  var obstacle = level.obstacleAt(newPos, this.size)
-  if (!obstacle) {
+  var obstacle = level.obstacleAt(newPos, this.size);
+  var otherActor = level.actorAt(this);
+  // 
+  if (!obstacle && !otherActor) {
     this.pos = newPos;
   } else {
-    level.bulletTouched(obstacle, this);
+    var flag = level.bulletTouched(obstacle, this, otherActor);
+    if (flag == false) {
+      this.pos = newPos;
+    }
   }
 }
 var playerXSpeed = 7;//设置人物横向移动的速度
@@ -481,8 +506,10 @@ Player.prototype.act = function (step, level, keys) {
   this.moveX(step, level, keys);
   this.moveY(step, level, keys);
   var otherActor = level.actorAt(this);
-  if (otherActor) level.playerTouched(otherActor.type, otherActor);//判断是否与其他的障碍物有冲突
-
+  if (otherActor) {
+    level.playerTouched(otherActor.type, otherActor);//判断是否与其他的障碍物有冲突
+    console.log(otherActor);
+  }
 
   this.shoot(step, level, keys);
   // 若游戏失败，使玩家的高度减小模拟下沉，并模拟惯性继续向前移动
@@ -495,11 +522,18 @@ Player.prototype.act = function (step, level, keys) {
 
 //设置子弹触碰到指定对象后的行为
 Level.prototype.bulletTouched = function (type, bullet, actor) {
-  if (type == "wall") {
+  if (actor instanceof Enemy) {
+    this.actors = this.actors.filter(function (other) {
+      return other != actor && other != bullet;
+    });
+    return true;
+  } else if (type == "wall") {
     this.actors = this.actors.filter(function (other) {
       return other != bullet;
     });
+    return true;
   }
+  return false;
 }
 //玩家设置碰撞到指定元素后的状态
 Level.prototype.playerTouched = function (type, actor) {
@@ -509,7 +543,7 @@ Level.prototype.playerTouched = function (type, actor) {
     this.status = "lost";
     this.finishDelay = 2;
     this.hp = 3;
-  } else if (type == "lava" && this.status == null && this.unmatched == false) {//若是岩浆生命值-1并进入短暂的无敌模式
+  } else if ((type == "lava" || type == "enemy") && this.status == null && this.unmatched == false) {//若是岩浆生命值-1并进入短暂的无敌模式
     this.unmatched = true;
     this.hp--;
     this.unmatchedTime = 1;
