@@ -15,6 +15,7 @@
  *    coinCount:记录金币数
  *    bulletDelay:用于记录每次发射子弹最少的间隔时间
  *    hasBullet:用于记录是否已经有子弹了
+ *    beatEnemyCount:统计打败的怪物数
  * Level的方法
  *    isFinished:用于判断是否已经结束游戏
  *    showResult:在控制台显示金币数，耗费的时间以及血槽剩余值
@@ -89,6 +90,7 @@
  *       size:表示敌人的长和高
  *       speed:表示敌人移动的方向以及速度
  *       type:设置当前敌人的类型
+ *       hp:设置怪物的生命值
  *     Enemy的方法
  *      act：描述敌人的移动
  * 
@@ -242,6 +244,7 @@ function Enemy(pos) {
   this.pos = pos;
   this.size = new Vector(0.8, 1);
   this.speed = new Vector(2, 0);
+  this.hp = 3;
 }
 Enemy.prototype.type = "enemy";
 
@@ -528,10 +531,17 @@ Player.prototype.act = function (step, level, keys) {
 //设置子弹触碰到指定对象后的行为
 Level.prototype.bulletTouched = function (type, bullet, actor) {
   if (actor instanceof Enemy) {
-    this.actors = this.actors.filter(function (other) {
-      return other != actor && other != bullet;
-    });
-    this.beatEnemyCount++;
+    if (actor.hp > 1) {
+      actor.hp--;
+      this.actors = this.actors.filter(function (other) {
+        return other != bullet;
+      });
+    } else {
+      this.actors = this.actors.filter(function (other) {
+        return other != actor && other != bullet;
+      });
+      this.beatEnemyCount++;
+    }
     return true;
   } else if (type == "wall") {
     this.actors = this.actors.filter(function (other) {
