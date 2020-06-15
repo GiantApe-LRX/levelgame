@@ -9,8 +9,8 @@ function CanvasDisplay(parent, level) {
   this.canvas.className = "imgbox";
   // this.canvas.style.display = block;
   // console.log(this.canvas.style);
-  this.canvas.width = Math.min(1000, level.width * scale);
-  this.canvas.height = Math.min(700, level.height * scale);
+  this.canvas.width = Math.min(800, level.width * scale);
+  this.canvas.height = Math.min(600, level.height * scale);
   parent.appendChild(this.canvas);
   this.statusBar = new StatusBar(parent, level);
   this.cx = this.canvas.getContext("2d");
@@ -18,6 +18,7 @@ function CanvasDisplay(parent, level) {
   this.level = level;
   this.animationTime = 0;
   this.flipPlayer = false;
+  this.flipEnemy = false;
 
   this.viewport = {
     left: 0,
@@ -100,6 +101,8 @@ CanvasDisplay.prototype.drawBackground = function () {
 
 var playerSprites = document.createElement("img");
 playerSprites.src = "img/player.png";
+var unmatchedPlayerSprites = document.createElement("img");
+unmatchedPlayerSprites.src = "img/unmatched_player.png";
 var playerXOverlap = 4;
 
 CanvasDisplay.prototype.drawPlayer = function (x, y, width, height) {
@@ -118,11 +121,37 @@ CanvasDisplay.prototype.drawPlayer = function (x, y, width, height) {
   if (this.flipPlayer)
     flipHorizontally(this.cx, x + width / 2);
 
-  this.cx.drawImage(playerSprites,
+  this.cx.drawImage((this.level.unmatched ? unmatchedPlayerSprites : playerSprites),
     sprite * width, 10, width, height,
     x, y, width, height);
   this.cx.restore();
 };
+
+
+var enemySprites = document.createElement("img");
+enemySprites.src = "img/enemy.png";
+var enemyXOverlap = 4;
+CanvasDisplay.prototype.drawEnemy = function (x, y, width, height, enemy) {
+  var sprite = 8;
+  width += enemyXOverlap * 2;
+  x -= enemyXOverlap;
+  if (enemy.speed.x != 0)
+    this.flipEnemy = enemy.speed.x < 0;
+
+  if (enemy.speed.y != 0)
+    sprite = 9;
+  else if (enemy.speed.x != 0)
+    sprite = Math.floor(this.animationTime * 12) % 8;
+
+  this.cx.save();
+  if (this.flipEnemy)
+    flipHorizontally(this.cx, x + width / 2);
+
+  this.cx.drawImage(enemySprites,
+    sprite * width, 10, width, height,
+    x, y, width, height);
+  this.cx.restore();
+}
 
 
 CanvasDisplay.prototype.drawActors = function () {
@@ -133,11 +162,15 @@ CanvasDisplay.prototype.drawActors = function () {
     var y = (actor.pos.y - this.viewport.top) * scale;
     if (actor.type == "player") {
       this.drawPlayer(x, y, width, height);
+    } else if (actor.type == "enemy") {
+      this.drawEnemy(x, y, width, height, actor);
     } else {
       if (actor.type == "coin") {
         tileX = 4 * scale;
       } else if (actor.type == "lava") {
         tileX = 2 * scale;
+      } else if (actor.type == "bullet") {
+        tileX = 4 * scale + 12;
       } else {
         tileX = 3 * scale;
       }

@@ -1,27 +1,27 @@
 .statusBar{
     float: left;
     width: 200px;
-    background-color: rgba(81, 78, 216, 80%);
+    background-color: #99EE6B;
 }
 .descDiv{
     width: 200px;
     height: 50px;
     color: white;
     line-height: 50px;
-    background-color: rgba(242, 61, 112, 80%);
+    background-color: #34CFBE;
     text-align: center;
 }
 .descTable{
     width: 200px;
     color: black;
     font-size: 15px;
-    background-color:rgba(138, 240, 60, 80%);
+    background-color:#6E86D6;
 }
 .descTable .label{
     width: 80px;
 }
 .descTable td{
-    border: 1px solid rgba(255, 208, 64, 80%);
+    border: 1px solid white;
 }
 
 .tipDiv{
@@ -33,11 +33,11 @@
     height: 50px;
     line-height: 50px;
     color: white;
-    background-color: rgba(242, 61, 112, 80%);
+    background-color: #34CFBE;
     text-align: center;
 }
 .statusTabel{
-    background-color: rgba(138, 240, 60, 80%);
+    background-color: #6E86D6;
     width: 200px;
     font-weight: bold;
     color: white;

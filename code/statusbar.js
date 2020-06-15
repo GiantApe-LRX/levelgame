@@ -1,6 +1,6 @@
 function StatusBar(parent, level) {
     this.wrap = parent.appendChild(elt("div", "statusBar"));
-    this.wrap.style.height = ((level.height * scale > 700) ? 700 : level.height * scale) + "px";
+    this.wrap.style.height = ((level.height * scale > 600) ? 600 : level.height * scale) + "px";
     this.level = level;
 }
 
@@ -73,6 +73,14 @@ StatusBar.prototype.showStatus = function (passID) {
         tdHPContent.innerText += "❤";
     }
 
+    /**
+     * 获取当前击败的怪物数量
+     */
+    var trBeatEnemyCount = statusTable.appendChild(elt("tr"));
+    var tdBeatEnemyCountLabel = trBeatEnemyCount.appendChild(elt("td", "statusLabel"));
+    tdBeatEnemyCountLabel.innerText = "当前击败的怪物数为：";
+    var tdBeatEnemyCountContent = trBeatEnemyCount.appendChild(elt("td"));
+    tdBeatEnemyCountContent.innerText = this.level.beatEnemyCount;
     /**
      * 获取当前总金币数
      */

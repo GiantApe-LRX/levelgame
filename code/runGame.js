@@ -152,8 +152,9 @@ function Level(plan) {
   this.hp = 3;
   this.timeCount = 0;
   this.coinCount = 0;
-  this.bulletDelay = 1;
+  this.bulletDelay = 0.5;
   this.hasBullet = false;
+  this.beatEnemyCount = 0;
 }
 
 Level.prototype.isFinished = function () {
@@ -199,6 +200,7 @@ var actorChars = {
   "=": Enemy,
   "|": Lava,
   "v": Lava,
+  ">": Lava,
   "b": Bullet,
   "#": Dest
 };
@@ -229,13 +231,16 @@ function Lava(pos, ch) {
   } else if (ch == "v") {
     this.speed = new Vector(0, 3);
     this.repeatPos = pos;
+  } else if (ch == ">") {
+    this.speed = new Vector(3, 0);
+    this.repeatPos = pos;
   }
 }
 Lava.prototype.type = "lava";
 
 function Enemy(pos) {
   this.pos = pos;
-  this.size = new Vector(1, 1);
+  this.size = new Vector(0.8, 1);
   this.speed = new Vector(2, 0);
 }
 Enemy.prototype.type = "enemy";
@@ -294,6 +299,7 @@ Level.prototype.showResult = function () {
   console.log("所获得的金币数为" + this.coinCount);
   console.log("所耗费的时间为" + this.getGameTime());
   console.log("血槽为" + this.getHP());
+  console.log("共击败了" + this.beatEnemyCount + "个敌人");
 }
 Level.prototype.getGameTime = function () {
   var time = this.timeCount;
@@ -375,7 +381,7 @@ Level.prototype.controlStatus = function (step) {
   //status状态的实时处理
   if (this.status != null) {
     this.finishDelay -= step;//调整关卡结束之后，继续进入下一关或者重新开始的时间
-    // console.log("结束延迟：" + this.finishDelay)//测试
+    console.log("结束延迟：" + this.finishDelay)//测试
   } else {
     this.timeCount += step;
   }
@@ -396,7 +402,7 @@ Level.prototype.controlBullet = function (step) {
   //子弹的实时处理
   if (this.bulletDelay < 0) {
     this.hasBullet = false;
-    this.bulletDelay = 1;
+    this.bulletDelay = 0.5;
   }
   if (this.hasBullet) {
     this.bulletDelay -= step;
@@ -508,7 +514,6 @@ Player.prototype.act = function (step, level, keys) {
   var otherActor = level.actorAt(this);
   if (otherActor) {
     level.playerTouched(otherActor.type, otherActor);//判断是否与其他的障碍物有冲突
-    console.log(otherActor);
   }
 
   this.shoot(step, level, keys);
@@ -526,6 +531,7 @@ Level.prototype.bulletTouched = function (type, bullet, actor) {
     this.actors = this.actors.filter(function (other) {
       return other != actor && other != bullet;
     });
+    this.beatEnemyCount++;
     return true;
   } else if (type == "wall") {
     this.actors = this.actors.filter(function (other) {
@@ -537,12 +543,11 @@ Level.prototype.bulletTouched = function (type, bullet, actor) {
 }
 //玩家设置碰撞到指定元素后的状态
 Level.prototype.playerTouched = function (type, actor) {
-  if (((type == "river" && this.status == null) || this.hp <= 0)) {//若是碰到河流直接死亡
-    this.hp = 0;
+  if (((type == "river" && this.status == null) || this.hp == 0)) {//若是碰到河流直接死亡
+    this.hp = -1;
     this.showResult();
     this.status = "lost";
     this.finishDelay = 2;
-    this.hp = 3;
   } else if ((type == "lava" || type == "enemy") && this.status == null && this.unmatched == false) {//若是岩浆生命值-1并进入短暂的无敌模式
     this.unmatched = true;
     this.hp--;
