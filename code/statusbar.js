@@ -1,6 +1,6 @@
 function StatusBar(parent, level) {
     this.wrap = parent.appendChild(elt("div", "statusBar"));
-    this.wrap.style.height = ((level.height * scale > 600) ? 600 : level.height * scale) + "px";
+    this.wrap.style.height = ((level.height * scale > 450) ? 450 : level.height * scale) + "px";
     this.level = level;
 }
 
