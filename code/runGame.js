@@ -199,12 +199,14 @@ Vector.prototype.times = function (factor) {
 var actorChars = {
   "@": Player,
   "o": Coin,
-  "=": Enemy,
+  "e": Enemy,
+  "=": Lava,
   "|": Lava,
   "v": Lava,
   ">": Lava,
   "b": Bullet,
-  "#": Dest
+  "#": Dest,
+  "=": Dodgeball
 };
 
 /**
@@ -213,8 +215,8 @@ var actorChars = {
  */
 
 function Player(pos) {
-  this.pos = pos.plus(new Vector(0, 0));
-  this.size = new Vector(0.8, 1);
+  this.pos = pos.plus(new Vector(0, -0.5));
+  this.size = new Vector(0.8, 1.5);
   this.speed = new Vector(0, 0);
   this.lastDir = "right";
 }
@@ -236,6 +238,8 @@ function Lava(pos, ch) {
   } else if (ch == ">") {
     this.speed = new Vector(3, 0);
     this.repeatPos = pos;
+  } else if (ch == "=") {
+    this.speed = new Vector(2, 0);
   }
 }
 Lava.prototype.type = "lava";
@@ -281,6 +285,13 @@ Bullet.prototype.type = "bullet";
 // console.log(simpleLevel.height, simpleLevel.width);
 // console.log(simpleLevel);
 
+
+function Dodgeball(pos) {
+  this.pos = pos;
+  this.size = new Vector(1, 1);
+  this.speed = new Vector(3.5, 0);
+}
+Dodgeball.prototype.type = "dodgeball";
 //==========================================================================
 
 
@@ -434,8 +445,9 @@ Enemy.prototype.act = function (step, level) {
 }
 Lava.prototype.act = function (step, level) {
   var newPos = this.pos.plus(this.speed.times(step));
-  if (!level.obstacleAt(newPos, this.size)) this.pos = newPos;
-  else if (this.repeatPos) this.pos = this.repeatPos;//若是垂直下落的熔岩，则触碰到障碍物就回到初始的位置
+  if (!level.obstacleAt(newPos, this.size)) {
+    this.pos = newPos;
+  } else if (this.repeatPos) this.pos = this.repeatPos;//若是垂直下落的熔岩，则触碰到障碍物就回到初始的位置
   else this.speed = this.speed.times(-1);
 };
 var wobbleSpeed = 8,
@@ -446,7 +458,11 @@ Coin.prototype.act = function (step) {
   var wobblePos = Math.sin(this.wobble) * wobbleDist;//以波形算出硬币新的位置
   this.pos = this.basePos.plus(new Vector(0, wobblePos));
 };
-
+Dodgeball.prototype.act = function (step, level) {
+  var newPos = this.pos.plus(this.speed.times(step));
+  if (!level.obstacleAt(newPos, this.size)) this.pos = newPos;
+  else this.speed = this.speed.times(-1);
+}
 Dest.prototype.act = function (step) {
   return;
 }
@@ -502,7 +518,7 @@ Player.prototype.moveY = function (step, level, keys) {
 };
 Player.prototype.shoot = function (step, level, keys) {
   var dir = (this.lastDir == "left" || this.lastDir == null) ? -1 : 1;
-  var newPos = this.pos.plus(new Vector(dir * this.size.y, 0));
+  var newPos = this.pos.plus(new Vector(dir * this.size.y, 0.5));
   if (keys.shoot && level.hasBullet == false) {
     var bullet = new Bullet(newPos, dir);
     level.actors.push(bullet);
@@ -558,18 +574,18 @@ Level.prototype.playerTouched = function (type, actor) {
     this.showResult();
     this.status = "lost";
     this.finishDelay = 2;
-  } else if ((type == "lava" || type == "enemy") && this.status == null && this.unmatched == false) {//若是岩浆生命值-1并进入短暂的无敌模式
+  } else if ((type == "lava" || type == "enemy" || type == "dodgeball") && this.status == null && this.unmatched == false) {//若是岩浆生命值-1并进入短暂的无敌模式
     this.unmatched = true;
     this.hp--;
     this.unmatchedTime = 1;
-  } else if (type == "coin") {//若是硬币则加分
+  } else if (type == "coin" && this.status == null) {//若是硬币则加分
     //拾取硬币
     this.actors = this.actors.filter(function (other) {
       return other != actor;
     });
     this.coinCount++;
 
-  } else if (type == "destination") {
+  } else if (type == "destination" && this.status == null) {
     //拾取披风
     this.actors = this.actors.filter(function (other) {
       return other != actor;

@@ -1,5 +1,6 @@
 function StatusBar(parent, level) {
     this.wrap = parent.appendChild(elt("div", "statusBar"));
+    this.controlTable = parent.appendChild(elt("div", "controlTable"));
     this.wrap.style.height = ((level.height * scale > 450) ? 450 : level.height * scale) + "px";
     this.level = level;
 }
@@ -117,4 +118,8 @@ StatusBar.prototype.showStatus = function (passID) {
     } else if (this.level.status == "lost") {
         tipDiv.innerHTML = "不要气馁,可以重新来过！<br>请等待...";
     }
+}
+
+StatusBar.prototype.drawControlTableElement = function () {
+
 }

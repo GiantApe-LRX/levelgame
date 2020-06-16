@@ -122,7 +122,7 @@ CanvasDisplay.prototype.drawPlayer = function (x, y, width, height) {
     flipHorizontally(this.cx, x + width / 2);
 
   this.cx.drawImage((this.level.unmatched ? unmatchedPlayerSprites : playerSprites),
-    sprite * width, 10, width, height,
+    sprite * width, 0, width, height,
     x, y, width, height);
   this.cx.restore();
 };
@@ -166,11 +166,13 @@ CanvasDisplay.prototype.drawActors = function () {
       this.drawEnemy(x, y, width, height, actor);
     } else {
       if (actor.type == "coin") {
-        tileX = 4 * scale;
+        tileX = 5 * scale;
       } else if (actor.type == "lava") {
         tileX = 2 * scale;
       } else if (actor.type == "bullet") {
-        tileX = 4 * scale + 12;
+        tileX = 5 * scale + 12;
+      } else if (actor.type == "dodgeball") {
+        tileX = 4 * scale
       } else {
         tileX = 3 * scale;
       }

@@ -1,3 +1,8 @@
+*{
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
 .background    { 
   background: rgb(52, 166, 251);
   table-layout: fixed;
@@ -15,7 +20,6 @@
 }
 .wall{
   background: white;
-  
 }
 .door{
   background: rgb(160, 64, 64);
@@ -28,10 +32,11 @@
   background: rgb(241, 229, 89); 
 }
 .player { 
-  background: rgb(64, 64, 64); 
+  background: green; 
 }
 .bullet{
   background-color: violet;
+  border-radius: 20px;
 }
 .enemy{
   background-color: crimson;
@@ -40,11 +45,14 @@
 .destination{
   background: peru;
 }
+.dodgeball{
+  background-color: maroon;
+}
 .game {
   float: left;
   overflow: hidden;
-  max-width:450px;
-  max-height: 650px;
+  max-width: 600px;
+  max-height: 450px;
   position: relative;
   /* border-radius: 10%; */
 }

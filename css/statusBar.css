@@ -1,10 +1,10 @@
 .statusBar{
     float: left;
-    width: 300px;
+    width: 250px;
     background-color: #99EE6B;
 }
 .descDiv{
-    width: 300px;
+    width: 250px;
     height: 50px;
     color: white;
     line-height: 50px;
@@ -12,8 +12,8 @@
     text-align: center;
 }
 .descTable{
-    width: 300px;
-    color: black;
+    width: 250px;
+    color: white;
     font-size: 15px;
     background-color:#6E86D6;
 }
@@ -25,7 +25,6 @@
 }
 
 .tipDiv{
-    margin-top: 50%;
     margin-left: 10px;
     color: white;
 }
@@ -38,11 +37,11 @@
 }
 .statusTabel{
     background-color: #6E86D6;
-    width: 300px;
+    width: 250px;
     font-weight: bold;
     color: white;
     font-size: 15px;
 }
-.statusLable{
-    height: 60px;
+.statusTabel tr{
+    height: 40px;
 }
