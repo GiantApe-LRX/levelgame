@@ -24,7 +24,7 @@ StatusBar.prototype.drawDesc = function () {
     var tdAltDescLabel = trAltDesc.appendChild(elt("td", "label"));
     var tdAltDesc = trAltDesc.appendChild(elt("td", "content"));
     tdAltDescLabel.innerText = "操作说明:";
-    tdAltDesc.innerHTML = "↑或k：跳跃<br>←或a：人物左移<br>→或d：人物右移<br>s或j：射击子弹";
+    tdAltDesc.innerHTML = "↑或k：跳跃<br>←或a：人物左移<br>→或d：人物右移<br>空格或j：射击子弹";
     //游戏目标：
     var trGameDesc = table.appendChild(elt("tr"));
     var tdGameDescLabel = trGameDesc.appendChild(elt("td", "label"));

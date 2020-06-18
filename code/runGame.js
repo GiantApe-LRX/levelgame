@@ -684,7 +684,7 @@ Level.prototype.playerTouched = function (type, actor) {
 //===========================跟踪按键========================================
 
 /**定义各个按键码的名字 */
-var arrowCodes = { 37: "left", 38: "up", 39: "right", 83: "shoot", 75: "up", 65: "left", 68: "right", 74: "shoot" };
+var arrowCodes = { 37: "left", 38: "up", 39: "right", 32: "shoot", 75: "up", 65: "left", 68: "right", 74: "shoot" };
 
 /**
  * 跟踪按键
