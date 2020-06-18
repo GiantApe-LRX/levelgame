@@ -51,7 +51,7 @@
 .game {
   float: left;
   overflow: hidden;
-  max-width: 600px;
+  max-width: 650px;
   max-height: 450px;
   position: relative;
   /* border-radius: 10%; */

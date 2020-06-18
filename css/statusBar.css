@@ -1,8 +1,10 @@
+/* 状态栏的样式 */
 .statusBar{
     float: left;
     width: 250px;
     background-color: #99EE6B;
 }
+/* 状态栏标题 */
 .descDiv{
     width: 250px;
     height: 50px;
@@ -11,6 +13,7 @@
     background-color: #34CFBE;
     text-align: center;
 }
+/* 状态栏内容 */
 .descTable{
     width: 250px;
     color: white;
@@ -23,11 +26,12 @@
 .descTable td{
     border: 1px solid white;
 }
-
+/* 状态栏中输赢时的提示信息 */
 .tipDiv{
     margin-left: 10px;
     color: white;
 }
+/* 引导状态栏页面 */
 .passInfoDiv{
     height: 50px;
     line-height: 50px;
@@ -43,5 +47,18 @@
     font-size: 15px;
 }
 .statusTabel tr{
+    height: 40px;
+}
+/*显示最终结果的样式*/
+.resultWrap{
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.resultTable{
+    margin-top: 15%;
+    margin-left: 35%;
+    color: white;
+}
+.resultTable tr{
     height: 40px;
 }

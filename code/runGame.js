@@ -18,7 +18,6 @@
  *    beatEnemyCount:统计打败的怪物数
  * Level的方法
  *    isFinished:用于判断是否已经结束游戏
- *    showResult:在控制台显示金币数，耗费的时间以及血槽剩余值
  *    getGameTime:获取游戏的时间
  *    getHP:获取当前的血量
  *    getUnmatchedTime:设置无敌状态剩余的时间
@@ -93,9 +92,32 @@
  *       hp:设置怪物的生命值
  *     Enemy的方法
  *      act：描述敌人的移动
- * 
+ *  设置躲避球的对象Dodgeball
+ *     Dodgeball的属性：
+ *       pos:表示躲避球的位置
+ *       size:表示躲避球的长和高
+ *       speed:表示躲避球移动的方向以及速度
+ *       type:设置躲避球的类型
+ *     Dodgeball的方法：
+ *       act:描述躲避球的移动
  **************************************************************************/
-
+/**************************************************************************
+ *  GameData对象用于统计最后结果
+ *     GameData的属性：
+ *      tot_hp:统计总共耗费的血量
+ *      tot_time:统计总共耗费的时间
+ *      tot_countCoin:统计总共获得的硬币数
+ *      tot_countBeatEnemy:统计总共击败的getTime敌人数
+ *      cur_hp:统计当前关卡所耗费的血量
+ *      cur_time:统计当前关卡所耗费的时间
+ *      cur_countCoin:统计总共获得的硬币数
+ *      cur_countBeatEnemy:统计当前关卡击败的敌人数
+ *    GameData的方法：
+ *      showTotGameData:在控制台显示最终结果
+ *      showCurGameData:在控制台显示本关卡的内容
+ *      getTime:将时间字符串化
+ * 
+ *************************************************************************/
 
 
 
@@ -309,12 +331,7 @@ Dodgeball.prototype.type = "dodgeball";
 
 //======================设置动作与冲突=======================================
 
-Level.prototype.showResult = function () {
-  console.log("所获得的金币数为" + this.coinCount);
-  console.log("所耗费的时间为" + this.getGameTime());
-  console.log("血槽为" + this.getHP());
-  console.log("共击败了" + this.beatEnemyCount + "个敌人");
-}
+
 Level.prototype.getGameTime = function () {
   var time = this.timeCount;
   time = Math.floor(time);
@@ -375,6 +392,52 @@ Level.prototype.actorAt = function (actor) {
 
 
 
+//===========================用于统计结果的对象（全局变量）==========================
+function GameData() {
+  this.tot_hp = 0;
+  this.tot_time = 0;
+  this.tot_countCoin = 0;
+  this.tot_countBeatEnemy = 0;
+  this.cur_hp = 0;
+  this.cur_time = 0;
+  this.cur_countCoin = 0;
+  this.cur_countBeatEnemy = 0;
+}
+GameData.prototype.showTotGameData = function () {
+  console.log("=======统计总共结果===============")
+  console.log("所获得的总金币数为" + this.tot_countCoin);
+  console.log("所耗费的总时间为" + this.getTime(this.tot_time));
+  console.log("消耗的血量" + this.tot_hp);
+  console.log("总共共击败了" + this.tot_countBeatEnemy + "个敌人");
+  console.log("=================================");
+}
+GameData.prototype.showCurGameData = function () {
+  console.log("=======统计本关结果===============")
+  console.log("所获得的总金币数为" + this.cur_countCoin);
+  console.log("所耗费的总时间为" + this.getTime(this.cur_time));
+  console.log("消耗的血量" + this.cur_hp);
+  console.log("总共共击败了" + this.cur_countBeatEnemy + "个敌人");
+  console.log("=================================");
+}
+GameData.prototype.getTime = function (time) {
+  var time;
+  time = Math.floor(time);
+  var timeStr = "", minute = 0, second = 0;
+  if (time >= 60) {
+    minute = Math.floor(time / 60);
+    time %= 60;
+    timeStr += minute + "分";
+  }
+  second = time % 60;
+  timeStr += second + "秒";
+  return timeStr;
+}
+
+var gameData = new GameData();
+//==========================================================================
+
+
+
 
 
 
@@ -395,7 +458,7 @@ Level.prototype.controlStatus = function (step) {
   //status状态的实时处理
   if (this.status != null) {
     this.finishDelay -= step;//调整关卡结束之后，继续进入下一关或者重新开始的时间
-    console.log("结束延迟：" + this.finishDelay)//测试
+    // console.log("结束延迟：" + this.finishDelay)//测试
   } else {
     this.timeCount += step;
   }
@@ -569,9 +632,8 @@ Level.prototype.bulletTouched = function (type, bullet, actor) {
 }
 //玩家设置碰撞到指定元素后的状态
 Level.prototype.playerTouched = function (type, actor) {
-  if (((type == "river" && this.status == null) || this.hp == 0)) {//若是碰到河流直接死亡
+  if (((type == "river" && this.status == null) || this.hp == 0)) {//若是碰到河流直接死亡 
     this.hp = -1;
-    this.showResult();
     this.status = "lost";
     this.finishDelay = 2;
   } else if ((type == "lava" || type == "enemy" || type == "dodgeball") && this.status == null && this.unmatched == false) {//若是岩浆生命值-1并进入短暂的无敌模式
@@ -590,9 +652,19 @@ Level.prototype.playerTouched = function (type, actor) {
     this.actors = this.actors.filter(function (other) {
       return other != actor;
     });
-    this.showResult();
+    console.log(this.timeCount);
+
+    /**
+     * 统计当前的数据
+     */
+    gameData.tot_time += this.timeCount, gameData.cur_time = this.timeCount;
+    gameData.tot_countCoin += this.coinCount, gameData.cur_countCoin = this.coinCount;
+    gameData.tot_countBeatEnemy += this.beatEnemyCount, gameData.cur_countBeatEnemy = this.beatEnemyCount;
+    gameData.tot_hp += (3 - this.hp), gameData.cur_hp = (3 - this.hp);
+    gameData.showCurGameData();
+    gameData.showTotGameData();
     this.status = "won";
-    this.finishDelay = 2;
+    this.finishDelay = 5;
   }
 };
 //==========================================================================
@@ -679,16 +751,21 @@ function runLevel(level, passID, unmatched, Display, andThen) {
     level.animate(step, arrows);//让平台里面的所有活动元素动起来(step是执行的步长，arrows是按键集合)
     display.drawFrame(step);//更新地图里的信息
     //更新状态栏中的信息
-    if (level.status == "won" && passID == 0) {
-      display.statusBar.drawBeginGameScene();
-    } else if (passID != 0) {
+
+    if (passID != 0) {
       display.statusBar.showStatus(passID);
     } else {
       display.statusBar.drawDesc();
     }
+    display.statusBar.drawResult(passID);
     if (level.isFinished()) {//若游戏结束，清除平台的所有元素
+      if (level.status == "won" && passID == 4) {
+        return false;
+      }
       display.clear();
-      if (andThen) andThen(level.status);//通过andThen来判断是进入下一关还是重新开始
+      if (andThen) {
+        andThen(level.status);//通过andThen来判断是进入下一关还是重新开始
+      }
       return false;
     }
   });
@@ -700,17 +777,23 @@ function runLevel(level, passID, unmatched, Display, andThen) {
  * @param {展现的函数} Display 
  * @param {关卡} n
  */
+
 function runGame(plans, Display, n, unmatched) {
   function startLevel(n) {
     runLevel(new Level(plans[n]), n, unmatched, Display, function (status) {
       if (status == "lost") {
         startLevel(n);
+        return true;
       } else if (n == 0) {
         console.log("Begin game!!!!");
         startLevel(1);
-      } else if (n < plans.length - 1) startLevel(n + 1);
-      else {
+        return true;
+      } else if (n < plans.length - 1) {
+        startLevel(n + 1);
+        return true;
+      } else {
         console.log("You Win!!!!");
+        return false;
       }
     });
   }
