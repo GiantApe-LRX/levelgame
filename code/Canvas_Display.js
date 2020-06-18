@@ -12,7 +12,6 @@ function CanvasDisplay(parent, level) {
   this.canvas.width = Math.min(650, level.width * scale);
   this.canvas.height = Math.min(450, level.height * scale);
   parent.appendChild(this.canvas);
-  this.statusBar = new StatusBar(parent, level);
   this.cx = this.canvas.getContext("2d");
 
   this.level = level;
@@ -31,7 +30,6 @@ function CanvasDisplay(parent, level) {
 
 CanvasDisplay.prototype.clear = function () {
   this.canvas.parentNode.removeChild(this.canvas);
-  this.statusBar.wrap.remove();
 };
 
 CanvasDisplay.prototype.drawFrame = function (step) {

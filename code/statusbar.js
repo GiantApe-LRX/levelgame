@@ -1,8 +1,9 @@
 
 
-function StatusBar(parent, level) {
+function StatusBar(parent, level, passID) {
     this.parent = parent;
     this.level = level;
+    this.passID = passID;
     this.wrap = parent.appendChild(elt("div", "statusBar"));
     this.wrap.style.height = ((level.height * scale > 450) ? 450 : level.height * scale) + "px";
     this.resultWrap;
@@ -11,7 +12,14 @@ function StatusBar(parent, level) {
 StatusBar.prototype.clear = function () {
     this.wrap.innerHTML = "";
 }
-
+StatusBar.prototype.run = function () {
+    if (this.passID != 0) {
+        this.showStatus(this.passID);
+    } else {
+        this.drawDesc();
+    }
+    this.drawResult(this.passID);
+}
 StatusBar.prototype.drawDesc = function () {
     this.clear();
     var descDiv = this.wrap.appendChild(elt("div", "descDiv"));
@@ -69,7 +77,7 @@ StatusBar.prototype.showStatus = function (passID) {
     var tdBeatEnemyCountLabel = trBeatEnemyCount.appendChild(elt("td", "statusLabel"));
     tdBeatEnemyCountLabel.innerText = "当前击败的怪物数为：";
     var tdBeatEnemyCountContent = trBeatEnemyCount.appendChild(elt("td"));
-    tdBeatEnemyCountContent.innerText = this.level.beatEnemyCount;
+    tdBeatEnemyCountContent.innerText = this.level.beatEnemyCount + "/" + gameData.cur_allEnemyNums;
     /**
      * 获取当前总金币数
      */
@@ -77,7 +85,7 @@ StatusBar.prototype.showStatus = function (passID) {
     var tdCoinCountLable = trCoinCount.appendChild(elt("td", "statusLable"));
     tdCoinCountLable.innerText = "总金币数："
     var tdCoinContent = trCoinCount.appendChild(elt("td"));
-    tdCoinContent.innerText = this.level.coinCount;
+    tdCoinContent.innerText = this.level.coinCount + "/" + gameData.cur_allCoinNums;
 
     /**
      * 获取当前状态以及无敌状态可持续的剩余时间
@@ -156,13 +164,13 @@ StatusBar.prototype.drawResultTable = function (passID) {
         var coinLabelTd = coinTr.appendChild(elt("td", "coinLabelTd"));
         var coinTd = coinTr.appendChild(elt("td", "timeTd"));
         coinLabelTd.innerHTML = "本关卡获得的硬币数为：";
-        coinTd.innerHTML = gameData.cur_countCoin;
+        coinTd.innerHTML = gameData.cur_countCoin + "/" + gameData.cur_allCoinNums;;
         //显示玩家击败的怪物数
         var enemyTr = resultTable.appendChild(elt("tr"));
         var enemyLabelTd = enemyTr.appendChild(elt("td", "enemyLabelTd"));
         var enemyTd = enemyTr.appendChild(elt("td", "timeTd"));
         enemyLabelTd.innerHTML = "本关卡击败的怪物数为：";
-        enemyTd.innerHTML = gameData.cur_countBeatEnemy;
+        enemyTd.innerHTML = gameData.cur_countBeatEnemy + "/" + gameData.cur_allEnemyNums;
         //显示玩家消耗的血量
         var hpTr = resultTable.appendChild(elt("tr"));
         var hpLabelTd = hpTr.appendChild(elt("td", "hpLabelTd"));
@@ -191,13 +199,13 @@ StatusBar.prototype.drawFinallyResult = function () {
     var coinLabelTd = coinTr.appendChild(elt("td", "coinLabelTd"));
     var coinTd = coinTr.appendChild(elt("td", "timeTd"));
     coinLabelTd.innerHTML = "所有关卡获得的硬币数为：";
-    coinTd.innerHTML = gameData.tot_countCoin;
+    coinTd.innerHTML = gameData.tot_countCoin + "/" + gameData.tot_allCoinNums;
     //显示玩家击败的怪物数
     var enemyTr = resultTable.appendChild(elt("tr"));
     var enemyLabelTd = enemyTr.appendChild(elt("td", "enemyLabelTd"));
     var enemyTd = enemyTr.appendChild(elt("td", "timeTd"));
     enemyLabelTd.innerHTML = "所有关卡击败的怪物数为：";
-    enemyTd.innerHTML = gameData.tot_countBeatEnemy;
+    enemyTd.innerHTML = gameData.tot_countBeatEnemy + "/" + gameData.tot_allEnemyNums;
     //显示玩家消耗的血量
     var hpTr = resultTable.appendChild(elt("tr"));
     var hpLabelTd = hpTr.appendChild(elt("td", "hpLabelTd"));

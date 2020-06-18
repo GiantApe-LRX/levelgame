@@ -393,10 +393,14 @@ function GameData() {
   this.tot_time = 0;
   this.tot_countCoin = 0;
   this.tot_countBeatEnemy = 0;
+  this.tot_allCoinNums = 0;
+  this.tot_allEnemyNums = 0;
   this.cur_hp = 0;
   this.cur_time = 0;
   this.cur_countCoin = 0;
   this.cur_countBeatEnemy = 0;
+  this.cur_allCoinNums = 0;
+  this.cur_allEnemyNums = 0;
 }
 GameData.prototype.showTotGameData = function () {
   console.log("=======统计总共结果===============")
@@ -733,30 +737,23 @@ function runAnimation(frameFunc) {
  */
 var arrows = trackKeys(arrowCodes);
 
-function runLevel(level, passID, unmatched, Display, andThen) {
+function runLevel(level, passID, unmatched, Display, StatusBar, andThen) {
   var display = new Display(document.body, level);
+  var statusBar = new StatusBar(document.body, level, passID);
   if (unmatched) {
     level.unmatched = true;
     level.unmatchedTime = 0x3f3f3f3f3f3f3f;//设置无敌时间为inf
-  }
-  if (passID == 0) {
-    display.statusBar.drawDesc();
   }
   runAnimation(function (step) {
     level.animate(step, arrows);//让平台里面的所有活动元素动起来(step是执行的步长，arrows是按键集合)
     display.drawFrame(step);//更新地图里的信息
     //更新状态栏中的信息
-
-    if (passID != 0) {
-      display.statusBar.showStatus(passID);
-    } else {
-      display.statusBar.drawDesc();
-    }
-    display.statusBar.drawResult(passID);
+    statusBar.run();
     if (level.isFinished()) {//若游戏结束，清除平台的所有元素
       if (level.status == "won" && passID == 4) {
         return false;
       }
+      statusBar.wrap.remove();
       display.clear();
       if (andThen) {
         andThen(level.status);//通过andThen来判断是进入下一关还是重新开始
@@ -773,23 +770,30 @@ function runLevel(level, passID, unmatched, Display, andThen) {
  * @param {关卡} n
  */
 
-function runGame(plans, Display, n, unmatched) {
+function runGame(plans, Display, StatusBar, n, unmatched) {
+
   function startLevel(n) {
-    runLevel(new Level(plans[n]), n, unmatched, Display, function (status) {
+    gameData.cur_allEnemyNums = 0;
+    gameData.cur_allCoinNums = 0;
+    plans[n].forEach(function (rows) {
+      rows.split("").forEach(function (ele) {
+        if (ele == "o") gameData.cur_allCoinNums++;
+
+        if (ele == "e") gameData.cur_allEnemyNums++;
+      });
+    });
+    runLevel(new Level(plans[n]), n, unmatched, Display, StatusBar, function (status) {
       if (status == "lost") {
         startLevel(n);
-        return true;
       } else if (n == 0) {
-        console.log("Begin game!!!!");
         startLevel(1);
-        return true;
       } else if (n < plans.length - 1) {
         startLevel(n + 1);
-        return true;
       } else {
         console.log("You Win!!!!");
         return false;
       }
+      return true;
     });
   }
   startLevel(n);

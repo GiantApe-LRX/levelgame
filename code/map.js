@@ -193,3 +193,12 @@ var GAME_LEVELS = [
 
 if (typeof module != "undefined" && module.exports)
   module.exports = GAME_LEVELS;
+
+GAME_LEVELS.forEach(function (level) {
+  level.forEach(function (row) {
+    row.split("").forEach(function (ele) {
+      if (ele == "o") gameData.tot_allCoinNums++;
+      if (ele == "e") gameData.tot_allEnemyNums++;
+    });
+  });
+});

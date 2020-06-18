@@ -16,7 +16,6 @@ function elt(name, className) {
 function DOMDisplay(parent, level) {
     this.wrap = parent.appendChild(elt("div", "game"));//游戏的包装器
     this.level = level;
-    this.statusBar = new StatusBar(parent, level);
     this.wrap.appendChild(this.drawBackground());
     this.actorLayer = null;//保存活动元素的动作
     this.drawFrame();//绘制活动元素
