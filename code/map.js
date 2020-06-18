@@ -1,4 +1,21 @@
 //">"横着移动得火焰
+/***************************************************************************
+ *        图例
+ *    x         云梯
+ *    r         暗河
+ *    @         玩家
+ *    !         不会移动的火焰         
+ *    =         横向来回移动的火焰
+ *    |         垂直来回移动的火焰
+ *    v         不断下落的火焰
+ *    >         不断右移的火焰
+ *    b         射出的子弹（不能在地图中出现，由玩家执行shoot命令后自动生成）
+ *    #         目标
+ *    =         灵光球
+ ****************************************************************************/
+
+
+
 var GAME_LEVELS = [
   [
     "                                                         ",
@@ -8,14 +25,14 @@ var GAME_LEVELS = [
     "  x      x  x               x  x                       x  ",
     "  x      x   x             x   x                       x  ",
     "  x      x    xxxxxxxxxxxxx    x                       x  ",
-    "  x      x                     x                   d   x  ",
-    "  x      x                     x                  ddd  x  ",
-    "  x     x xxxxxx       xxxxx    x                d   d x  ",
-    "  x     xx     xx     x    xx   x               d     dx  ",
+    "  x      x                     x                   x   x  ",
+    "  x      x                     x                  xxx  x  ",
+    "  x     x xxxxxx       xxxxx    x                x   x x  ",
+    "  x     xx     xx     x    xx   x               x     xx  ",
     "  x     xx    xxx     x   xxx   x                      x  ",
     "  x     x xxxxxx       xxxxx    x                      x  ",
     "  x     x                       x                      x  ",
-    "  x     x                       x                d # d x  ",
+    "  x     x                       x                x # x x  ",
     "  x      x        xxx           x               xxxxxxxx  ",
     "  x      x        xxx          x               xxxxxxxxx  ",
     "  x       xx       x    x    xx               xxxxxxxxxx  ",

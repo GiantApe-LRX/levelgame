@@ -83,7 +83,7 @@ CanvasDisplay.prototype.drawBackground = function () {
       var screenX = (x - view.left) * scale;
       var screenY = (y - view.top) * scale;
       // var tileX = tile == "lava" ? scale : 0;
-      if (tile == "wall" || tile == "door") {
+      if (tile == "wall") {
         tileX = 0;
       } else if (tile == "river") {
         tileX = scale * 2;

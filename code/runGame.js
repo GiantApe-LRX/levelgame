@@ -161,7 +161,6 @@ function Level(plan) {
       else if (ch == "x") fieldType = "wall";
       else if (ch == "!") fieldType = "lava";
       else if (ch == "r") fieldType = "river";
-      else if (ch == "d") fieldType = "door";
       gridLine.push(fieldType);
     }
     this.grid.push(gridLine);
