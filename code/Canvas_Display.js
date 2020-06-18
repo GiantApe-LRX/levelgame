@@ -86,9 +86,9 @@ CanvasDisplay.prototype.drawBackground = function () {
       if (tile == "wall" || tile == "door") {
         tileX = 0;
       } else if (tile == "river") {
-        tileX = scale;
-      } else if (tile == "lava") {
         tileX = scale * 2;
+      } else if (tile == "lava") {
+        tileX = scale;
       } else if (tile == "destination") {
         tileX = scale * 3;
       }
@@ -168,7 +168,7 @@ CanvasDisplay.prototype.drawActors = function () {
       if (actor.type == "coin") {
         tileX = 5 * scale;
       } else if (actor.type == "lava") {
-        tileX = 2 * scale;
+        tileX = scale;
       } else if (actor.type == "bullet") {
         tileX = 5 * scale + 12;
       } else if (actor.type == "dodgeball") {
