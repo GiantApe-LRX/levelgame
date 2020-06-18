@@ -108,10 +108,14 @@
  *      tot_time:统计总共耗费的时间
  *      tot_countCoin:统计总共获得的硬币数
  *      tot_countBeatEnemy:统计总共击败的getTime敌人数
+ *      tot_allCoinNums:统计所有关卡的所有金币数
+ *      tot_allEnemyNums:统计所有敌军的个数
  *      cur_hp:统计当前关卡所耗费的血量
  *      cur_time:统计当前关卡所耗费的时间
  *      cur_countCoin:统计总共获得的硬币数
  *      cur_countBeatEnemy:统计当前关卡击败的敌人数
+ *      cur_allCoinNums:统计当前关卡中的金币数
+ *      cur_allEnemyNums:统计当前关卡中击败的敌军数
  *    GameData的方法：
  *      showTotGameData:在控制台显示最终结果
  *      showCurGameData:在控制台显示本关卡的内容
