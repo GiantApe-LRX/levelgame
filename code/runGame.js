@@ -224,7 +224,6 @@ var actorChars = {
   "=": Lava,
   "|": Lava,
   "v": Lava,
-  ">": Lava,
   "b": Bullet,
   "#": Dest,
   "=": Dodgeball
@@ -255,9 +254,6 @@ function Lava(pos, ch) {
     this.speed = new Vector(0, 2);
   } else if (ch == "v") {
     this.speed = new Vector(0, 3);
-    this.repeatPos = pos;
-  } else if (ch == ">") {
-    this.speed = new Vector(3, 0);
     this.repeatPos = pos;
   } else if (ch == "=") {
     this.speed = new Vector(2, 0);

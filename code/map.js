@@ -8,7 +8,6 @@
  *    =         横向来回移动的火焰
  *    |         垂直来回移动的火焰
  *    v         不断下落的火焰
- *    >         不断右移的火焰
  *    b         射出的子弹（不能在地图中出现，由玩家执行shoot命令后自动生成）
  *    #         目标
  *    =         灵光球
@@ -152,7 +151,7 @@ var GAME_LEVELS = [
     "  x               xxxxx       xx          x                             xxx       x!!!x          x         x  ",
     "  x               oxxxo       x    xxx    x                             x x        xxx          xxx        x  ",
     "  x                xxx        xxxxxxxxxxxxx  x oo x    x oo x    x oo  xx xx                    xxx        x  ",
-    "  x      @  >       x         x           xrrx    xrrrrx    xrrrrx    xx   xx                    x         x  ",
+    "  x      @          x         x           xrrx    xrrrrx    xrrrrx    xx   xx                    x         x  ",
     "  xxxxxxxxxxxxxxxxxxxxxxxxxxxxx           xxxxxxxxxxxxxxxxxxxxxxxxxxxxx     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  ",
     "                                                                                                              ",
     "                                                                                                              "],
