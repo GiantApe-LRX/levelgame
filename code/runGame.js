@@ -594,8 +594,8 @@ Player.prototype.shoot = function (step, level, keys) {
 
 }
 Player.prototype.act = function (step, level, keys) {
-  this.moveX(step, level, keys);
   this.moveY(step, level, keys);
+  this.moveX(step, level, keys);
   var otherActor = level.actorAt(this);
   if (otherActor) {
     level.playerTouched(otherActor.type, otherActor);//判断是否与其他的障碍物有冲突
