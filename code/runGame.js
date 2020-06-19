@@ -584,7 +584,7 @@ Player.prototype.moveY = function (step, level, keys) {
 };
 Player.prototype.shoot = function (step, level, keys) {
   var dir = (this.lastDir == "left" || this.lastDir == null) ? -1 : 1;
-  var newPos = this.pos.plus(new Vector(dir * this.size.y, 0.5));
+  var newPos = this.pos.plus(new Vector(dir * this.size.y / 16, 0.5));
   if (keys.shoot && level.hasBullet == false) {
     var bullet = new Bullet(newPos, dir);
     level.actors.push(bullet);
