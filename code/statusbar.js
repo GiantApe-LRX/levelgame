@@ -56,13 +56,13 @@ StatusBar.prototype.drawDesc = function () {
         "3.减少一点血量后玩家会进入短暂的无敌模式<br>" +
         "4.无敌模式下可以免疫火焰/史莱姆/躲避球的伤害<br>" +
         "5.若玩家陷入暗河中或掉出地图则血量变为0<br>" +
-        "6.每个史莱姆可以承三次子弹的攻击<br>";
+        "6.每个史莱姆可承受三次子弹的攻击<br>";
     tableDiv.appendChild(table);
 }
 
 
 /**
- * 展示当前的状态(当前剩余血量，总金币数，总耗时，当前状态)
+ * 展示当前的状态(当前剩余血量，总共获得的能量球数，总耗时，当前状态)
  */
 StatusBar.prototype.showStatus = function (passID) {
     this.clear();
@@ -92,11 +92,11 @@ StatusBar.prototype.showStatus = function (passID) {
     var tdBeatEnemyCountContent = trBeatEnemyCount.appendChild(elt("td"));
     tdBeatEnemyCountContent.innerText = this.level.beatEnemyCount + "/" + gameData.cur_allEnemyNums;
     /**
-     * 获取当前总金币数
+     * 获取当前总能量球数
      */
     var trCoinCount = statusTable.appendChild(elt("tr"));
     var tdCoinCountLable = trCoinCount.appendChild(elt("td", "statusLable"));
-    tdCoinCountLable.innerText = "总金币数："
+    tdCoinCountLable.innerText = "当前获得的能量球数："
     var tdCoinContent = trCoinCount.appendChild(elt("td"));
     tdCoinContent.innerText = this.level.coinCount + "/" + gameData.cur_allCoinNums;
 
@@ -184,11 +184,11 @@ StatusBar.prototype.drawInfoTable = function (passID) {
         var timeTd = timeTr.appendChild(elt("td", "timeTd"));
         timeLabelTd.innerHTML = "本关卡所耗费的时间为：";
         timeTd.innerHTML = gameData.getTime(gameData.cur_time);
-        //显示玩家吃到的硬币
+        //显示玩家吃到的能量球数
         var coinTr = resultTable.appendChild(elt("tr"));
         var coinLabelTd = coinTr.appendChild(elt("td", "coinLabelTd"));
         var coinTd = coinTr.appendChild(elt("td", "timeTd"));
-        coinLabelTd.innerHTML = "本关卡获得的硬币数为：";
+        coinLabelTd.innerHTML = "本关卡获得的能量球数为：";
         coinTd.innerHTML = gameData.cur_countCoin + "/" + gameData.cur_allCoinNums;;
         //显示玩家击败的怪物数
         var enemyTr = resultTable.appendChild(elt("tr"));
@@ -219,11 +219,11 @@ StatusBar.prototype.drawFinallyResult = function () {
     var timeTd = timeTr.appendChild(elt("td", "timeTd"));
     timeLabelTd.innerHTML = "通过所有关卡耗费的时间为：";
     timeTd.innerHTML = gameData.getTime(gameData.tot_time);
-    //显示玩家吃到的硬币
+    //显示玩家吃到的能量球数
     var coinTr = resultTable.appendChild(elt("tr"));
     var coinLabelTd = coinTr.appendChild(elt("td", "coinLabelTd"));
     var coinTd = coinTr.appendChild(elt("td", "timeTd"));
-    coinLabelTd.innerHTML = "所有关卡获得的硬币数为：";
+    coinLabelTd.innerHTML = "所有关卡获得的能量球数为：";
     coinTd.innerHTML = gameData.tot_countCoin + "/" + gameData.tot_allCoinNums;
     //显示玩家击败的怪物数
     var enemyTr = resultTable.appendChild(elt("tr"));
